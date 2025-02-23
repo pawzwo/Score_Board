@@ -5,7 +5,7 @@ import domain.ScoreBoard;
 
 public class ScoreBoardService {
 
-    public void startGame(ScoreBoard scoreBoard, Game game) {
+    public void startGameUpdateScore(ScoreBoard scoreBoard, Game game) {
         String key = game.getHomeTeam().getName() + game.getAwayTeam().getName();
         scoreBoard.getGames().put(key, game);
     }
