@@ -1,5 +1,6 @@
 package data;
 
+import domain.EventType;
 import domain.Game;
 import domain.Team;
 import org.junit.jupiter.params.provider.Arguments;
@@ -38,5 +39,17 @@ public class GamesData {
         return Stream.of(Arguments.of(game1, game2), Arguments.of(game3, game4));
     }
 
+    public static Stream<Arguments> generateTwoStartEventsWithEventTypeProvided() {
+        return Stream.of(
+                Arguments.of("Mexico", "Canada", EventType.START_OR_UPDATE),
+                Arguments.of("Spain", "Brazil", EventType.START_OR_UPDATE)
+        );
+    }
 
+    public static Stream<Arguments> generateTwoStartEventsWithoutEventTypeProvided() {
+        return Stream.of(
+                Arguments.of("Mexico", "Canada"),
+                Arguments.of("Spain", "Brazil")
+        );
+    }
 }
