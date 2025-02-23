@@ -14,6 +14,6 @@ class GameTest {
 
         assertEquals("Game", game.getClass().getSimpleName());
         assertEquals("Mexico", game.getHomeTeam().getName());
-        assertEquals("Canad", game.getAwayTeam().getName());
+        assertEquals("Canada", game.getAwayTeam().getName());
     }
 }

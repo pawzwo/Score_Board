@@ -18,7 +18,7 @@ class ScoreBoardTest {
         ScoreBoard scoreBoard = new ScoreBoard(games);
 
         assertEquals("ScoreBoard", scoreBoard.getClass().getSimpleName());
-        assertTrue(scoreBoard.getGames().contains(game));
+        assertTrue(scoreBoard.getGames().containsValue(game));
         assertEquals(1, scoreBoard.getGames().size());
     }
 }
