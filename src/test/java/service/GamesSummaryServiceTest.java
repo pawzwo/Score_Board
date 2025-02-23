@@ -2,6 +2,7 @@ package service;
 
 import domain.EventType;
 import domain.Game;
+import domain.GamesSummary;
 import domain.ScoreBoard;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

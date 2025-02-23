@@ -1,15 +1,21 @@
 package domain;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 import java.util.Objects;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Getter
+@Setter
 public class Game {
 
+    private int index;
+    @NonNull
     private Team homeTeam;
+    @NonNull
     private Team awayTeam;
 
 
