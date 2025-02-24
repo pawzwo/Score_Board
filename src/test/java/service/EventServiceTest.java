@@ -15,6 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.LinkedHashMap;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -82,5 +83,20 @@ public class EventServiceTest {
         eventServiceInst.processEvent(scoreBoard, "Spain", "Brazil", 0, 1);
 
         assertEquals(1, scoreBoard.getGames().size());
+    }
+
+    @Test
+    void readEvent_twoStartEventsOneUpdateOneFinishEventWithoutEventTypeProvided_EventProcessedGamesStartedAndFinishedSuccessfully() {
+        ScoreBoardService scoreBoardServiceInst = new ScoreBoardService();
+        EventService eventServiceInst = new EventService(scoreBoardServiceInst);
+        eventServiceInst.readEvent(scoreBoard, "Mexico,Canada,0,0,START");
+        eventServiceInst.readEvent(scoreBoard, "Spain,Brazil,0,0,START");
+        eventServiceInst.readEvent(scoreBoard, "Spain,Brazil,0,1");
+        eventServiceInst.readEvent(scoreBoard, "Spain,Brazil,0,1");
+
+        assertEquals(1, scoreBoard.getGames().size());
+        assertTrue(scoreBoard.getGames().containsKey("MexicoCanada"));
+        assertEquals(0, scoreBoard.getGames().get("MexicoCanada").getHomeTeam().getScore());
+        assertEquals(0, scoreBoard.getGames().get("MexicoCanada").getAwayTeam().getScore());
     }
 }
