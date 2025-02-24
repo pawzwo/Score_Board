@@ -14,8 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.LinkedHashMap;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -98,5 +97,17 @@ public class EventServiceTest {
         assertTrue(scoreBoard.getGames().containsKey("MexicoCanada"));
         assertEquals(0, scoreBoard.getGames().get("MexicoCanada").getHomeTeam().getScore());
         assertEquals(0, scoreBoard.getGames().get("MexicoCanada").getAwayTeam().getScore());
+    }
+
+    @Test
+    void readEventValidateData_eventDataCorrupted_ExceptionThrown() {
+        ScoreBoardService scoreBoardServiceInst = new ScoreBoardService();
+        EventService eventServiceInst = new EventService(scoreBoardServiceInst);
+
+        Exception exception = assertThrows(CorruptedEventDataException.class, eventServiceInst.readEvent(scoreBoard, "Mexico,Canada,0"));
+        assertEquals("The event data is corrupted, event skipped", exception.getMessage());
+        assertThrows(CorruptedEventDataException.class, eventServiceInst.readEvent(scoreBoard, "Spain,Brazil,a,1"));
+        assertThrows(CorruptedEventDataException.class, eventServiceInst.readEvent(scoreBoard, " ,Brazil,0,0,START"));
+        assertThrows(CorruptedEventDataException.class, eventServiceInst.readEvent(scoreBoard, "Spain,Brazil,0,b"));
     }
 }
