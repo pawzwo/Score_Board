@@ -6,7 +6,6 @@ import domain.ScoreBoard;
 import domain.Team;
 import exception.CorruptedEventDataException;
 import lombok.AllArgsConstructor;
-import org.apache.commons.codec.binary.StringUtils;
 
 import java.util.regex.Pattern;
 
