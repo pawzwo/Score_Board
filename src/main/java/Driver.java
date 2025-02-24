@@ -83,9 +83,9 @@ public class Driver {
                 "Mexico,Canada,0,4,UPDATE",
                 "Mexico,Canada,0,5,UPDATE",
                 "Mexico,Canada,0,5,END",
-                "Spain,Brazil,0,0,END",
-                "France,Germany,2,1,END",
+                "Spain,Brazil,10,2,END",
+                "France,Germany,2,2,END",
                 "Uruguay,Italy,6,6,END",
-                "Argentina,Australia,2,1,END");
+                "Argentina,Australia,3,1,END");
     }
 }
