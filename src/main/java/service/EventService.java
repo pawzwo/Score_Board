@@ -4,7 +4,11 @@ import domain.EventType;
 import domain.Game;
 import domain.ScoreBoard;
 import domain.Team;
+import exception.CorruptedEventDataException;
 import lombok.AllArgsConstructor;
+import org.apache.commons.codec.binary.StringUtils;
+
+import java.util.regex.Pattern;
 
 @AllArgsConstructor
 public class EventService {
@@ -43,12 +47,13 @@ public class EventService {
         }
     }
 
-    public void readEvent(ScoreBoard scoreBoard, String event) {
-        String[] eventChars = event.split(",");
-        if (eventChars.length == 4) {
-            processEvent(scoreBoard, eventChars[0], eventChars[1], Integer.parseInt(eventChars[2]), Integer.parseInt(eventChars[3]));
-        } else if (eventChars.length == 5) {
-            processEvent(scoreBoard, eventChars[0], eventChars[1], Integer.parseInt(eventChars[2]), Integer.parseInt(eventChars[3]), assignEventType(eventChars[4]));
+    public void readEvent(ScoreBoard scoreBoard, String event) throws CorruptedEventDataException {
+        String[] eventArr = event.split(",");
+        validateData(eventArr, scoreBoard);
+        if (eventArr.length == 4) {
+            processEvent(scoreBoard, eventArr[0], eventArr[1], Integer.parseInt(eventArr[2]), Integer.parseInt(eventArr[3]));
+        } else if (eventArr.length == 5) {
+            processEvent(scoreBoard, eventArr[0], eventArr[1], Integer.parseInt(eventArr[2]), Integer.parseInt(eventArr[3]), assignEventType(eventArr[4]));
         }
     }
 
@@ -59,6 +64,43 @@ public class EventService {
                 return EventType.START_OR_UPDATE;
             default:
                 return EventType.FINISH;
+        }
+    }
+
+    private void validateData(String[] eventDataArr, ScoreBoard scoreBoard) throws CorruptedEventDataException {
+        if (eventDataArr.length < 4 || eventDataArr.length > 5) {
+            throw new CorruptedEventDataException();
+        }
+
+        String homeTeamName = eventDataArr[0];
+        String awayTeamName = eventDataArr[1];
+        String scoreHomeTeam = eventDataArr[2];
+        String scoreAwayTeam = eventDataArr[3];
+        Pattern pattern = Pattern.compile("\\d{1,2}");
+
+        if (homeTeamName.isBlank() || awayTeamName.isBlank()
+                || !pattern.matcher(scoreHomeTeam).matches() || !pattern.matcher(scoreAwayTeam).matches()) {
+            throw new CorruptedEventDataException();
+        }
+
+        if (eventDataArr.length == 5) {
+            String eventType = eventDataArr[4];
+            if (!(eventType.equals("START") || eventType.equals("UPDATE") || eventType.equals("END"))) {
+                throw new CorruptedEventDataException();
+            } else if ((!scoreAwayTeam.equals("0") || !scoreHomeTeam.equals("0")) && eventType.equals("START")
+                    || (scoreAwayTeam.equals("0") && scoreHomeTeam.equals("0") && eventType.equals("UPDATE"))) {
+                throw new CorruptedEventDataException();
+            }
+        }
+        String gameKey = homeTeamName + awayTeamName;
+        Game game = scoreBoard.getGames().get(gameKey);
+
+        if (game != null) {
+            int scoreHomeTeamGame = game.getHomeTeam().getScore();
+            int scoreAwayTeamGame = game.getAwayTeam().getScore();
+            if (scoreHomeTeamGame > Integer.parseInt(scoreHomeTeam) || scoreAwayTeamGame > Integer.parseInt(scoreAwayTeam)) {
+                throw new CorruptedEventDataException();
+            }
         }
     }
 }

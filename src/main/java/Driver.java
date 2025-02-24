@@ -1,5 +1,6 @@
 import domain.GamesSummary;
 import domain.ScoreBoard;
+import exception.CorruptedEventDataException;
 import service.EventService;
 import service.GamesSummaryService;
 import service.ScoreBoardService;
@@ -17,21 +18,27 @@ public class Driver {
 
         List<String> events = provideData();
         for (int i = 0; i < events.size(); i++) {
-            eventService.readEvent(scoreBoard, events.get(i));
-            if (i % 10 == 0 || i == 41) {
-                System.out.println("Score board and summary report at event " + (i-1));
+            try {
+                eventService.readEvent(scoreBoard, events.get(i));
+            } catch (CorruptedEventDataException e) {
+                System.out.println(e.getMessage());
+            }
+
+            if (i != 0 && i % 10 == 0 || i == 41) {
+                System.out.println("Score board and summary report at event " + (i - 1));
                 System.out.println(scoreBoard);
                 GamesSummary gamesSummary = gamesSummaryService.generateSummary(scoreBoard);
                 System.out.println(gamesSummary);
             }
         }
+
         GamesSummary gamesSummary = gamesSummaryService.generateSummary(scoreBoard);
         System.out.println("Final score board and summary report:");
         System.out.println(scoreBoard);
         System.out.println(gamesSummary);
     }
 
-    private static List<String> provideData () {
+    private static List<String> provideData() {
         return List.of(
                 "Mexico,Canada,0,0,START",
                 "Mexico,Canada,0,1,UPDATE",

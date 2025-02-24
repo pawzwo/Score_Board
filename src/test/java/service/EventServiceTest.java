@@ -3,6 +3,7 @@ package service;
 import domain.EventType;
 import domain.Game;
 import domain.ScoreBoard;
+import exception.CorruptedEventDataException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -104,10 +105,35 @@ public class EventServiceTest {
         ScoreBoardService scoreBoardServiceInst = new ScoreBoardService();
         EventService eventServiceInst = new EventService(scoreBoardServiceInst);
 
-        Exception exception = assertThrows(CorruptedEventDataException.class, eventServiceInst.readEvent(scoreBoard, "Mexico,Canada,0"));
-        assertEquals("The event data is corrupted, event skipped", exception.getMessage());
-        assertThrows(CorruptedEventDataException.class, eventServiceInst.readEvent(scoreBoard, "Spain,Brazil,a,1"));
-        assertThrows(CorruptedEventDataException.class, eventServiceInst.readEvent(scoreBoard, " ,Brazil,0,0,START"));
-        assertThrows(CorruptedEventDataException.class, eventServiceInst.readEvent(scoreBoard, "Spain,Brazil,0,b"));
+        Exception exception = assertThrows(CorruptedEventDataException.class, () -> eventServiceInst.readEvent(scoreBoard, "Mexico,Canada,0"));
+        assertEquals("CorruptedEventDataException: The event data is corrupted, event skipped", exception.getMessage());
+        assertDoesNotThrow(() -> eventServiceInst.readEvent(scoreBoard, "Spain,Brazil,0,0,START"));
+        assertThrows(CorruptedEventDataException.class, () -> eventServiceInst.readEvent(scoreBoard, "Spain,Brazil,a,1"));
+        assertThrows(CorruptedEventDataException.class, () -> eventServiceInst.readEvent(scoreBoard, " ,Brazil,0,0,START"));
+        assertThrows(CorruptedEventDataException.class, () -> eventServiceInst.readEvent(scoreBoard, "Spain,Brazil,0,b"));
+        assertThrows(CorruptedEventDataException.class, () -> eventServiceInst.readEvent(scoreBoard, "Spain,Brazil,0,0,BLA"));
+    }
+
+    @Test
+    void validateEvent_eventStartedOneCorrectUpdateEventOneUpdateEventWithCorruptedScore_ExceptionThrown() {
+        ScoreBoardService scoreBoardServiceInst = new ScoreBoardService();
+        EventService eventServiceInst = new EventService(scoreBoardServiceInst);
+
+        assertDoesNotThrow(() -> eventServiceInst.readEvent(scoreBoard, "Spain,Brazil,0,0,START"));
+        assertDoesNotThrow(() -> eventServiceInst.readEvent(scoreBoard, "Spain,Brazil,0,1,UPDATE"));
+        Exception exception = assertThrows(CorruptedEventDataException.class, () -> eventServiceInst.readEvent(scoreBoard, "Spain,Brazil,0,0,UPDATE"));
+        assertEquals("CorruptedEventDataException: The event data is corrupted, event skipped", exception.getMessage());
+    }
+
+    @Test
+    void validateEvent_eventStartedOneCorrectUpdateEventOneUpdateEventWithCorruptedEventType_ExceptionThrown() {
+        ScoreBoardService scoreBoardServiceInst = new ScoreBoardService();
+        EventService eventServiceInst = new EventService(scoreBoardServiceInst);
+
+        assertDoesNotThrow(() -> eventServiceInst.readEvent(scoreBoard, "Spain,Brazil,0,0,START"));
+        assertDoesNotThrow(() -> eventServiceInst.readEvent(scoreBoard, "Spain,Brazil,0,1,UPDATE"));
+        Exception exception = assertThrows(CorruptedEventDataException.class, () -> eventServiceInst.readEvent(scoreBoard, "Spain,Brazil,0,1,START"));
+        assertEquals("CorruptedEventDataException: The event data is corrupted, event skipped", exception.getMessage());
+        assertThrows(CorruptedEventDataException.class, () -> eventServiceInst.readEvent(scoreBoard, "Spain,Brazil,0,0,UPDATE"));
     }
 }
