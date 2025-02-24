@@ -10,4 +10,11 @@ import java.util.LinkedHashMap;
 public class ScoreBoard {
 
     private LinkedHashMap<String, Game> games;
+
+    @Override
+    public String toString() {
+        StringBuilder stringBuilder = new StringBuilder();
+        games.values().forEach(game -> stringBuilder.append(game.toString()).append("\n"));
+        return stringBuilder.toString();
+    }
 }

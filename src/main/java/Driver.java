@@ -19,21 +19,22 @@ public class Driver {
         for (int i = 0; i < events.size(); i++) {
             eventService.readEvent(scoreBoard, events.get(i));
             if (i % 10 == 0 || i == 41) {
+                System.out.println("Score board and summary report at event " + (i-1));
                 System.out.println(scoreBoard);
                 GamesSummary gamesSummary = gamesSummaryService.generateSummary(scoreBoard);
                 System.out.println(gamesSummary);
             }
         }
         GamesSummary gamesSummary = gamesSummaryService.generateSummary(scoreBoard);
+        System.out.println("Final score board and summary report:");
         System.out.println(scoreBoard);
         System.out.println(gamesSummary);
-
     }
 
     private static List<String> provideData () {
         return List.of(
-                "Mexico,Canda,0,0,START",
-                "Mexico,Canda,0,1,UPDATE",
+                "Mexico,Canada,0,0,START",
+                "Mexico,Canada,0,1,UPDATE",
                 "Spain,Brazil,0,0,START",
                 "France,Germany,0,0,START",
                 "Spain,Brazil,0,1,UPDATE",

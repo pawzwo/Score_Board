@@ -42,4 +42,23 @@ public class EventService {
             selectActionOnEvent(scoreBoard, game, EventType.START_OR_UPDATE);
         }
     }
+
+    public void readEvent(ScoreBoard scoreBoard, String event) {
+        String[] eventChars = event.split(",");
+        if (eventChars.length == 4) {
+            processEvent(scoreBoard, eventChars[0], eventChars[1], Integer.parseInt(eventChars[2]), Integer.parseInt(eventChars[3]));
+        } else if (eventChars.length == 5) {
+            processEvent(scoreBoard, eventChars[0], eventChars[1], Integer.parseInt(eventChars[2]), Integer.parseInt(eventChars[3]), assignEventType(eventChars[4]));
+        }
+    }
+
+    private EventType assignEventType(String eventType) {
+        switch (eventType) {
+            case "START":
+            case "UPDATE":
+                return EventType.START_OR_UPDATE;
+            default:
+                return EventType.FINISH;
+        }
+    }
 }
